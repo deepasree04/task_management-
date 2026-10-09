@@ -1,6 +1,14 @@
 # Task Management Application
 
-A modern full-stack **Task Management Application** built as part of the Codeingil Technical Assignment. The application features a robust **Django REST Framework** backend connected to a **MySQL** database, paired with a sleek, responsive **React.js (Vite)** dashboard.
+A modern full-stack **Task Management Application** built as part of the Codeingil Technical Assignment. The application features a robust **Django REST Framework** backend connected to a **MySQL** database, paired with a sleek, responsive **React.js (Vite)** single-page application served from a single unified Django development server.
+
+---
+
+## Single-Server Architecture
+
+Django on port `8000` serves both:
+1. **React SPA Dashboard** at `http://127.0.0.1:8000/` (and static assets at `/assets/...`).
+2. **REST API Endpoints** at `http://127.0.0.1:8000/api/tasks/`.
 
 ---
 
@@ -17,7 +25,7 @@ A modern full-stack **Task Management Application** built as part of the Codeing
 - **Framework**: React.js 19 (via Vite)
 - **Language**: JavaScript (ES6+)
 - **Styling**: Modern CSS with Glassmorphism, CSS Variables, & Custom Animations
-- **HTTP Client**: Axios
+- **HTTP Client**: Axios (configured with relative same-origin API URLs `/api/tasks/`)
 
 ### Development & Tools
 - **Operating System**: Windows
@@ -44,63 +52,31 @@ A modern full-stack **Task Management Application** built as part of the Codeing
 
 ---
 
-## Project Structure
+## Quick Start Workflow (Single Command)
 
-```text
-task-management/
-├── backend/
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── .env.example
-│   ├── config/
-│   │   ├── __init__.py      # PyMySQL initialization
-│   │   ├── settings.py      # Django settings (MySQL, CORS, DRF)
-│   │   ├── urls.py          # Root URL dispatcher
-│   │   ├── wsgi.py
-│   │   └── asgi.py
-│   └── tasks/
-│       ├── models.py        # Task ORM Model
-│       ├── serializers.py   # DRF TaskSerializer with validation
-│       ├── views.py         # REST API views (GET, POST, PUT, PATCH, DELETE)
-│       ├── urls.py          # /api/tasks/ routes
-│       └── tests.py         # 9 Automated DRF unit tests
-├── frontend/
-│   ├── package.json
-│   ├── index.html
-│   ├── vite.config.js
-│   ├── .env.example
-│   └── src/
-│       ├── components/
-│       │   ├── Header.jsx
-│       │   ├── StatsCards.jsx
-│       │   ├── TaskFilters.jsx
-│       │   ├── TaskList.jsx
-│       │   ├── TaskItem.jsx
-│       │   ├── TaskModal.jsx
-│       │   ├── DeleteConfirmModal.jsx
-│       │   └── NotificationBanner.jsx
-│       ├── services/
-│       │   └── taskService.js  # Axios API communication
-│       ├── App.jsx
-│       ├── main.jsx
-│       └── index.css
-├── README.md
-└── .gitignore
+We provide a convenient PowerShell script `run-app.ps1` in the root directory that automatically builds the React frontend assets into `backend/frontend_dist` and launches the Django server on port 8000:
+
+```powershell
+cd d:\task-management
+.\run-app.ps1
 ```
+
+Open your web browser at **`http://127.0.0.1:8000/`**.
 
 ---
 
-## Prerequisites
+## Rebuilding Frontend After Code Changes
 
-Before running the application on Windows, ensure the following are installed:
+Whenever you modify any React component in `frontend/src/`:
 
-1. **Python 3.10+**: Verify via `python --version`
-2. **Node.js 18+ & npm**: Verify via `node -v` and `npm.cmd -v`
-3. **MySQL Server 8.0**: Verify service status in PowerShell:
+1. Open PowerShell in `frontend/`:
    ```powershell
-   Get-Service -Name "*mysql*"
+   cd d:\task-management\frontend
+   npm.cmd run build
    ```
-4. **Git**: Verify via `git --version`
+2. Vite will update `backend/frontend_dist/` automatically. Refresh your browser at `http://127.0.0.1:8000/`.
+
+*(Optional: If you prefer hot-module reloading during heavy frontend UI development, you can still run `npm.cmd run dev` in `frontend/` to use Vite's dev server on port 5173).*
 
 ---
 
@@ -114,12 +90,7 @@ Before running the application on Windows, ensure the following are installed:
    ```sql
    CREATE DATABASE IF NOT EXISTS task_management;
    ```
-3. Create the backend `.env` file from `.env.example` inside `backend/`:
-   ```powershell
-   cd backend
-   Copy-Item .env.example .env
-   ```
-4. Update `DB_PASSWORD` in `backend/.env` with your local MySQL root password:
+3. Update `DB_PASSWORD` in `backend/.env` with your local MySQL root password:
    ```env
    DB_NAME=task_management
    DB_USER=root
@@ -130,73 +101,25 @@ Before running the application on Windows, ensure the following are installed:
 
 ---
 
-## Backend Setup & Instructions
+## Backend & Test Instructions
 
-All commands must be executed in Windows PowerShell inside the `backend/` folder.
+Execute in Windows PowerShell inside `backend/`:
 
-1. **Navigate to backend directory**:
+1. **Run Backend Unit Tests**:
    ```powershell
    cd d:\task-management\backend
-   ```
-
-2. **Create Python virtual environment**:
-   ```powershell
-   python -m venv venv
-   ```
-
-3. **Install Python dependencies**:
-   ```powershell
-   .\venv\Scripts\python.exe -m pip install -r requirements.txt
-   ```
-
-4. **Generate and apply Django migrations**:
-   ```powershell
-   .\venv\Scripts\python.exe manage.py makemigrations tasks
-   .\venv\Scripts\python.exe manage.py migrate
-   ```
-
-5. **Run Backend Unit Tests**:
-   ```powershell
    .\venv\Scripts\python.exe manage.py test tasks
    ```
 
-6. **Start Django Development Server**:
+2. **Run Django System Check**:
    ```powershell
-   .\venv\Scripts\python.exe manage.py runserver 8000
-   ```
-   The backend API will be available at `http://127.0.0.1:8000/api/tasks/`.
-
----
-
-## Frontend Setup & Instructions
-
-Open a **separate** Windows PowerShell window for the frontend commands.
-
-1. **Navigate to frontend directory**:
-   ```powershell
-   cd d:\task-management\frontend
+   .\venv\Scripts\python.exe manage.py check
    ```
 
-2. **Install Node dependencies**:
+3. **Start Django Server Manually**:
    ```powershell
-   npm.cmd install
+   .\venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
    ```
-
-3. **Create environment file**:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-
-4. **Test Production Build**:
-   ```powershell
-   npm.cmd run build
-   ```
-
-5. **Start Vite Development Server**:
-   ```powershell
-   npm.cmd run dev
-   ```
-   The React Dashboard will launch at `http://localhost:5173`.
 
 ---
 
@@ -212,68 +135,3 @@ Base URL: `http://127.0.0.1:8000/api/`
 | `PUT` | `/api/tasks/{id}/` | Full update task | `200 OK` | `400 Bad Request`, `404 Not Found` |
 | `PATCH` | `/api/tasks/{id}/` | Partial update (e.g. status) | `200 OK` | `400 Bad Request`, `404 Not Found` |
 | `DELETE` | `/api/tasks/{id}/` | Delete task | `204 No Content` | `404 Not Found` |
-
-### Example Request Bodies
-
-#### 1. POST /api/tasks/ (Create Task)
-```json
-{
-  "title": "Prepare Drag-and-Drop Column Feature",
-  "description": "Implement Kanban column view in React frontend.",
-  "status": "Pending",
-  "due_date": "2026-11-20"
-}
-```
-
-#### 2. PATCH /api/tasks/1/ (Update Status)
-```json
-{
-  "status": "In Progress"
-}
-```
-
-### Example Response Format (GET /api/tasks/1/)
-```json
-{
-  "id": 1,
-  "title": "Prepare Drag-and-Drop Column Feature",
-  "description": "Implement Kanban column view in React frontend.",
-  "status": "In Progress",
-  "due_date": "2026-11-20",
-  "created_at": "2026-10-09T18:30:00.123456Z",
-  "updated_at": "2026-10-09T18:35:12.654321Z"
-}
-```
-
----
-
-## Common Errors & Troubleshooting
-
-1. **PowerShell Script Execution Policy Error (`npm.ps1 cannot be loaded...`)**:
-   - **Fix**: Use `npm.cmd` instead of `npm`, or run `Set-ExecutionPolicy -Scope Process Bypass` in PowerShell.
-
-2. **MySQL Access Denied (`ERROR 1045 (28000)`)**:
-   - **Fix**: Ensure your MySQL root password is correctly defined in `backend/.env` under `DB_PASSWORD`.
-
-3. **CORS Error in Browser Console (`Access-Control-Allow-Origin`)**:
-   - **Fix**: Verify `CORS_ALLOWED_ORIGINS` in `backend/.env` contains `http://localhost:5173`. `django-cors-headers` is configured in `config/settings.py`.
-
-4. **PyMySQL / MySQLclient module missing**:
-   - **Fix**: Ensure you run commands using `.\venv\Scripts\python.exe` inside `backend/`.
-
----
-
-## GitHub Submission Instructions
-
-To push the repository to GitHub:
-
-1. Create a new GitHub repository named `task-management` on [github.com](https://github.com).
-2. Link your local repository to GitHub in PowerShell:
-   ```powershell
-   cd d:\task-management
-   git remote add origin https://github.com/YOUR_USERNAME/task-management.git
-   git branch -M main
-   git push -u origin main
-   ```
-3. Verification before pushing:
-   - Ensure `.env`, `venv/`, and `node_modules/` are excluded by checking `git status`.
