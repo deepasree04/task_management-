@@ -1,137 +1,249 @@
 # Task Management Application
 
-A modern full-stack **Task Management Application** built as part of the Codeingil Technical Assignment. The application features a robust **Django REST Framework** backend connected to a **MySQL** database, paired with a sleek, responsive **React.js (Vite)** single-page application served from a single unified Django development server.
+A full-stack Task Management Application built with **Django REST Framework, React.js, and MySQL**. This project was developed as a technical assignment and provides REST APIs and a responsive interface for creating, managing, filtering, and tracking tasks.
 
----
+## Features
 
-## Single-Server Architecture
-
-Django on port `8000` serves both:
-1. **React SPA Dashboard** at `http://127.0.0.1:8000/` (and static assets at `/assets/...`).
-2. **REST API Endpoints** at `http://127.0.0.1:8000/api/tasks/`.
-
----
+- **Dashboard:** Displays total tasks and counts by status.
+- **Task management:** Create, view, edit, and delete tasks.
+- **Task status:** Track tasks as Pending, In Progress, or Completed.
+- **Task details:** Store a title, optional description, status, and optional due date.
+- **Filtering and search:** Filter tasks by status and search by title or description.
+- **Validation and error handling:** Display validation errors and success or failure notifications.
+- **Responsive interface:** Supports desktop, tablet, and mobile screen sizes.
 
 ## Technology Stack
 
 ### Backend
-- **Language**: Python 3.14
-- **Framework**: Django 5.1 & Django REST Framework (DRF)
-- **Database**: MySQL Server 8.0 (with `PyMySQL` driver & Django ORM)
-- **Middleware**: `django-cors-headers`
-- **Environment Management**: `python-dotenv`
+
+- Python
+- Django
+- Django REST Framework
+- MySQL
+- PyMySQL
+- python-dotenv
 
 ### Frontend
-- **Framework**: React.js 19 (via Vite)
-- **Language**: JavaScript (ES6+)
-- **Styling**: Modern CSS with Glassmorphism, CSS Variables, & Custom Animations
-- **HTTP Client**: Axios (configured with relative same-origin API URLs `/api/tasks/`)
 
-### Development & Tools
-- **Operating System**: Windows
-- **Version Control**: Git & GitHub
+- React.js
+- Vite
+- JavaScript (ES6+)
+- Axios
+- CSS
 
----
+### Tools
 
-## Features
+- Git and GitHub
+- Visual Studio Code
 
-- **Dashboard Metrics**: Summary cards displaying Total Tasks, Pending, In Progress, and Completed task counts.
-- **Full CRUD Operations**:
-  - **Create**: Add new tasks with validation (title required, description, status, due date).
-  - **Read**: Fetch and display all persisted tasks from Django REST API.
-  - **Update**: Full edit via modal form (PUT) or quick inline status toggle (PATCH).
-  - **Delete**: Remove tasks with double confirmation modal dialog.
-- **Filtering & Search**:
-  - Filter tasks by status: *All Tasks*, *Pending*, *In Progress*, *Completed*.
-  - Real-time client-side search across task titles and descriptions.
-- **User Experience**:
-  - Responsive design for mobile, tablet, and desktop views.
-  - Toast notification banners for API success/error messages.
-  - Interactive modal dialogs with backdrop blur.
-  - Empty states and animated loading spinners.
+## Project Structure
 
----
-
-## Quick Start Workflow (Single Command)
-
-We provide a convenient PowerShell script `run-app.ps1` in the root directory that automatically builds the React frontend assets into `backend/frontend_dist` and launches the Django server on port 8000:
-
-```powershell
-cd d:\task-management
-.\run-app.ps1
+```text
+task-management/
+├── backend/
+│   ├── config/
+│   ├── tasks/
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+├── run-app.ps1
+├── README.md
+└── .gitignore
 ```
 
-Open your web browser at **`http://127.0.0.1:8000/`**.
+*The directory listing above illustrates the expected layout; retain any additional configuration and files already present in your project.*
 
----
+## Prerequisites
 
-## Rebuilding Frontend After Code Changes
+Install the following before running the application:
 
-Whenever you modify any React component in `frontend/src/`:
+- Python
+- Node.js and npm
+- MySQL Server
+- Git
 
-1. Open PowerShell in `frontend/`:
-   ```powershell
-   cd d:\task-management\frontend
-   npm.cmd run build
-   ```
-2. Vite will update `backend/frontend_dist/` automatically. Refresh your browser at `http://127.0.0.1:8000/`.
+## Database Setup
 
-*(Optional: If you prefer hot-module reloading during heavy frontend UI development, you can still run `npm.cmd run dev` in `frontend/` to use Vite's dev server on port 5173).*
+1. Start your MySQL server.
 
----
+2. Log in to MySQL:
 
-## Database Setup (MySQL)
-
-1. Open PowerShell or MySQL Workbench and log into your MySQL instance:
    ```powershell
    & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p
    ```
-2. Create the target database:
+
+3. Create the application database if it does not already exist:
+
    ```sql
-   CREATE DATABASE IF NOT EXISTS task_management;
+   CREATE DATABASE IF NOT EXISTS task_management
+   CHARACTER SET utf8mb4
+   COLLATE utf8mb4_unicode_ci;
    ```
-3. Update `DB_PASSWORD` in `backend/.env` with your local MySQL root password:
+
+4. Exit the MySQL console:
+
+   ```sql
+   exit
+   ```
+
+5. Create the backend environment file from `.env.example` if necessary, and configure `backend/.env` with your local database credentials.
+
+   Example configuration:
+
    ```env
+   SECRET_KEY=replace_with_a_local_secret_key
+   DEBUG=True
+   ALLOWED_HOSTS=localhost,127.0.0.1
+
    DB_NAME=task_management
    DB_USER=root
-   DB_PASSWORD=your_mysql_password
+   DB_PASSWORD=replace_with_your_local_mysql_password
    DB_HOST=127.0.0.1
    DB_PORT=3306
    ```
 
----
+   **Never commit your real `.env` file, database password, or production secrets to GitHub.**
 
-## Backend & Test Instructions
+## Installation and Setup
 
-Execute in Windows PowerShell inside `backend/`:
+### 1. Configure the backend
 
-1. **Run Backend Unit Tests**:
-   ```powershell
-   cd d:\task-management\backend
-   .\venv\Scripts\python.exe manage.py test tasks
-   ```
+Open PowerShell in the project root:
 
-2. **Run Django System Check**:
-   ```powershell
-   .\venv\Scripts\python.exe manage.py check
-   ```
+```powershell
+cd D:\task-management\backend
+```
 
-3. **Start Django Server Manually**:
-   ```powershell
-   .\venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
-   ```
+Activate the existing virtual environment:
 
----
+```powershell
+.\venv\Scripts\Activate.ps1
+```
 
-## REST API Endpoint Documentation
+If PowerShell blocks activation, you can run the virtual environment's Python executable directly:
 
-Base URL: `http://127.0.0.1:8000/api/`
+```powershell
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
-| HTTP Method | Endpoint | Action | Success Code | Error Code |
-| :--- | :--- | :--- | :--- | :--- |
-| `GET` | `/api/tasks/` | List all tasks | `200 OK` | `500 Server Error` |
-| `POST` | `/api/tasks/` | Create a new task | `201 Created` | `400 Bad Request` |
-| `GET` | `/api/tasks/{id}/` | Retrieve single task | `200 OK` | `404 Not Found` |
-| `PUT` | `/api/tasks/{id}/` | Full update task | `200 OK` | `400 Bad Request`, `404 Not Found` |
-| `PATCH` | `/api/tasks/{id}/` | Partial update (e.g. status) | `200 OK` | `400 Bad Request`, `404 Not Found` |
-| `DELETE` | `/api/tasks/{id}/` | Delete task | `204 No Content` | `404 Not Found` |
+Run database migrations:
+
+```powershell
+.\venv\Scripts\python.exe manage.py migrate
+```
+
+Check the Django configuration:
+
+```powershell
+.\venv\Scripts\python.exe manage.py check
+```
+
+### 2. Configure the frontend
+
+Open another PowerShell terminal:
+
+```powershell
+cd D:\task-management\frontend
+npm install
+npm run build
+```
+
+If your project uses a custom build script or a different frontend output directory, follow the configuration in `package.json` and `vite.config.js`.
+
+## Running the Application
+
+### Option 1: Single-server setup
+
+From the project root, run:
+
+```powershell
+cd D:\task-management
+.\run-app.ps1
+```
+
+If the script is configured to build the React frontend and launch Django, open:
+
+**[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+
+### Option 2: Start Django manually
+
+From the project root:
+
+```powershell
+cd D:\task-management\backend
+.\venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+```
+
+Open **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**.
+
+## REST API Documentation
+
+Base URL:
+
+```text
+http://127.0.0.1:8000/api/
+```
+
+| Method | Endpoint           | Description                                 |
+| ------ | ------------------ | ------------------------------------------- |
+| GET    | `/api/tasks/`      | Retrieve all tasks                          |
+| POST   | `/api/tasks/`      | Create a task                               |
+| GET    | `/api/tasks/{id}/` | Retrieve a specific task                    |
+| PUT    | `/api/tasks/{id}/` | Update a task                               |
+| PATCH  | `/api/tasks/{id}/` | Partially update a task, such as its status |
+| DELETE | `/api/tasks/{id}/` | Delete a task                               |
+
+### Task fields
+
+| Field         | Description                        |
+| ------------- | ---------------------------------- |
+| `title`       | Required task title                |
+| `description` | Optional task description          |
+| `status`      | Pending, In Progress, or Completed |
+| `due_date`    | Optional due date                  |
+
+### Common HTTP status codes
+
+- `200 OK` — Request completed successfully.
+- `201 Created` — Task created successfully.
+- `204 No Content` — Task deleted successfully.
+- `400 Bad Request` — Invalid input or validation failure.
+- `404 Not Found` — Task does not exist.
+- `500 Internal Server Error` — Unexpected server error.
+
+Actual response codes depend on the implemented API behavior.
+
+## Running Tests
+
+Run the backend tests:
+
+```powershell
+cd D:\task-management\backend
+.\venv\Scripts\python.exe manage.py test tasks
+```
+
+Build the frontend:
+
+```powershell
+cd D:\task-management\frontend
+npm run build
+```
+
+## Version Control
+
+Before committing, ensure that `.env` files, virtual environments, `node_modules`, and generated files containing secrets are excluded from Git.
+
+Example Git commands:
+
+```bash
+git add README.md
+git commit -m "Improve project documentation"
+git push origin main
+```
+
+##
+
