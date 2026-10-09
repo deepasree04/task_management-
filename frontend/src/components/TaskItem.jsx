@@ -15,12 +15,17 @@ export function TaskItem({ task, onStatusChange, onEdit, onDelete }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'No due date';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }).format(date);
+    const parts = dateString.split('T')[0].split('-');
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+      const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }).format(date);
+    }
+    return dateString;
   };
 
   return (

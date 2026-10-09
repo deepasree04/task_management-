@@ -44,6 +44,19 @@ class TaskAPITests(APITestCase):
         self.assertEqual(response.data['status'], Task.STATUS_PENDING)
         self.assertEqual(Task.objects.count(), 3)
 
+    def test_create_task_with_empty_due_date_and_description(self):
+        """Test creating a task with empty description and empty due_date string"""
+        payload = {
+            'title': 'Task with optional empty fields',
+            'description': '',
+            'status': Task.STATUS_PENDING,
+            'due_date': ''
+        }
+        response = self.client.post(self.list_create_url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsNone(response.data['due_date'])
+        self.assertEqual(response.data['description'], '')
+
     def test_reject_empty_title(self):
         """Test creating a task with empty title fails (400 Bad Request)"""
         payload = {
@@ -85,7 +98,6 @@ class TaskAPITests(APITestCase):
         self.assertEqual(response.data['title'], 'Updated Task 1 Title')
         self.assertEqual(response.data['status'], Task.STATUS_COMPLETED)
 
-        # Refresh from database
         self.task1.refresh_from_db()
         self.assertEqual(self.task1.title, 'Updated Task 1 Title')
 
@@ -100,7 +112,6 @@ class TaskAPITests(APITestCase):
 
         self.task1.refresh_from_db()
         self.assertEqual(self.task1.status, Task.STATUS_COMPLETED)
-        # Verify title remains unchanged
         self.assertEqual(self.task1.title, 'Initial Task 1')
 
     def test_delete_task(self):

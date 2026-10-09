@@ -16,6 +16,14 @@ class TaskSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def to_internal_value(self, data):
+        # Convert empty string due_date to None so optional date fields don't fail DRF validation
+        if isinstance(data, dict):
+            data = data.copy()
+            if data.get('due_date') == '':
+                data['due_date'] = None
+        return super().to_internal_value(data)
+
     def validate_title(self, value):
         if not value or not value.strip():
             raise serializers.ValidationError("Task title cannot be empty.")
